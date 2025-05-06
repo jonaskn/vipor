@@ -119,11 +119,12 @@ offsetX <- function(y, x=rep(1, length(y)), width=0.4, varwidth=FALSE,...) {
 #' }
 #' @param nbins the number of points used to calculate density (defaults to 1000 for quasirandom and pseudorandom and 100 for others)
 #' @param adjust adjust the bandwidth used to calculate the kernel density (smaller values mean tighter fit, larger values looser fit, default is 1)
+#' @param side the side the data points are offset to. (0: both sides, 1: positive/right/top, 2:negative/left/bottom, default is 0)
 #' @export
 #' @rdname offsetX 
 # @seealso \code{\link{offsetX}}, \code{\link[stats]{density}}
 # @return a vector with of x-offsets between -1 and 1 of the same length as y
-offsetSingleGroup<-function(y,maxLength=NULL,method=c('quasirandom','pseudorandom','smiley','maxout','frowney','minout','tukey','tukeyDense'),nbins=NULL,adjust=1) {
+offsetSingleGroup<-function(y,maxLength=NULL,method=c('quasirandom','pseudorandom','smiley','maxout','frowney','minout','tukey','tukeyDense'),nbins=NULL,adjust=1,side=0) {
   method<-match.arg(method)
   if(method %in% c('smiley'))method<-'maxout' 
   if(method %in% c('frowney'))method<-'minout' 
@@ -153,7 +154,7 @@ offsetSingleGroup<-function(y,maxLength=NULL,method=c('quasirandom','pseudorando
   else pointDensities<-stats::approx(dens$x,dens$y,y)$y
 
   #*2 to get -1 to 1
-  out<-(offset-.5)*2*pointDensities*subgroup_width
+  out<-(offset-0.5*(side==0))*2*pointDensities*subgroup_width*(1-2*(side<0))
 
   return(out)
 }
